@@ -17,37 +17,45 @@ class TextArea:
 
         self.blockList = []
 
-
+        #Creates a rectangle to be used as the border, since it is earlier in the draw list the next obj drawn will be "on top" giving the illusion of a border.
+        #This should be functionalised to allow it to be altered programmtically when the text area class is made.
         borderX = self.x 
         borderY = self.y 
-
         self.batch.add(4, GL_QUADS, None, ("v2f", (borderX - 10, borderY - 10,  borderX + 10 + self.width, borderY - 10,  borderX + 10 + self.width, borderY + 10 + self.height,  borderX - 10, borderY + 10  + self.height,)), 
         ('c3B', (0, 255, 255, 0, 255, 255,0, 255, 255,0, 255, 255,)))
-        
+
         #Creates a quad at 0,0,0 (the first vertex is at this location) with input variables.
         self.batch.add(4, GL_QUADS, None, ("v2f", (self.x, self.y,  self.x + self.width, self.y,  self.x + self.width, self.y + self.height,  self.x, self.y + self.height,)), 
         ('c3B', (255, 255, 255,255, 255, 255,255, 255, 255,255, 255, 255,)))
 
-        
-
-        self.addBlocks(self.x, self.y, 250, self.width, self.height)
+        self.addBlocks(self.x, self.y, self.width, self.height)
 
     #Fills the text area with blocks. StartX & startyY refer to the position of where blocks are started to be drawn from.
-    def addBlocks(self, startX, startY, numberOfblocks, maxX, maxY):
+    def addBlocks(self, startX, startY, maxX, maxY):
         offsetX = 0
         offsetY = 0
-        i = 0
-        while i < numberOfblocks:
-            self.blockList.append(Block(startX + offsetX, startY + offsetY))
-            i +=1
-            #Adding + 20 which is the current size of the block accounts for the position of the next block, this stops blocks being added past the maxium.
-            if( offsetX +20 >= maxX):
-                offsetY += 20
-                offsetX = 0
-            else:
-                offsetX += 20
-            
+        
+        padding = 2
+        startX = startX + padding
+        startY = startY + padding
+
+        #Workout how many blocks can be added on each row.
+        rowBlockMax = maxX / 25
+        colBlockMax = maxY / 25
+        r = 0
+        c = 0
+        
+        while c < colBlockMax:
+            while r < rowBlockMax:
+                self.blockList.append(Block(startX + offsetX, startY + offsetY))
+                r += 1
+                offsetX = offsetX + padding + 20
+            r = 0
+            offsetX = 0
+            c += 1
+            offsetY = offsetY + padding + 20
         return True
+
 
     def draw(self):
         self.batch.draw()
@@ -56,7 +64,6 @@ class TextArea:
     #Iterates through the blockList calling draw on each block, weather anything is output depends on that blocks flipped state.
     def drawBlocks(self):
         for i, val in enumerate(self.blockList):
-            val.flip()
             val.draw()
 
 
@@ -93,7 +100,7 @@ class Window(pyglet.window.Window):
         self.push_handlers(self.keys)
 
         #Creates a text area with these values, for the time being the values entered should adhere to a plan for the size of the blocks, however in the future it would be better if the size of the textArea defined the size of the blocks.
-        self.textArea = TextArea(100, 100, 500, 200)
+        self.textArea = TextArea(50, 50, 600, 200)
         #pyglet.clock.schedule(self.update)
 
 
