@@ -17,9 +17,18 @@ class TextArea:
 
         self.blockList = []
 
+
+        borderX = self.x 
+        borderY = self.y 
+
+        self.batch.add(4, GL_QUADS, None, ("v2f", (borderX - 10, borderY - 10,  borderX + 10 + self.width, borderY - 10,  borderX + 10 + self.width, borderY + 10 + self.height,  borderX - 10, borderY + 10  + self.height,)), 
+        ('c3B', (0, 255, 255, 0, 255, 255,0, 255, 255,0, 255, 255,)))
+        
         #Creates a quad at 0,0,0 (the first vertex is at this location) with input variables.
         self.batch.add(4, GL_QUADS, None, ("v2f", (self.x, self.y,  self.x + self.width, self.y,  self.x + self.width, self.y + self.height,  self.x, self.y + self.height,)), 
         ('c3B', (255, 255, 255,255, 255, 255,255, 255, 255,255, 255, 255,)))
+
+        
 
         self.addBlocks(self.x, self.y, 250, self.width, self.height)
 
@@ -47,6 +56,7 @@ class TextArea:
     #Iterates through the blockList calling draw on each block, weather anything is output depends on that blocks flipped state.
     def drawBlocks(self):
         for i, val in enumerate(self.blockList):
+            val.flip()
             val.draw()
 
 
@@ -62,9 +72,9 @@ class Block:
         ("c3B", (255,0,0, 255,0,0, 255,0,0, 255,0,0,)))
     
     #Switches the block on or off.
-    def flip():
+    def flip(self):
         self.state = ~self.state
-        return state
+        return self.state
     
     def draw(self):
         #This adds the other part to the functionality of the blocks, allowing them to be "flipped" on or off.
