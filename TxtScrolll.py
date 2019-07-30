@@ -6,6 +6,19 @@ from pyglet.gl import *
 from pyglet.window import *
 import math
 
+#Word class will contain several letters
+class Word:
+    def __init__(self):
+        self.contents = ""
+
+#Individual letter class, this will hold the pattern required to display the letter in the text area.
+class Letter:
+    def __init___(self, heightBlocks, widthBlocks, nameOfLetter, pattern):
+        self.height = heightBlocks
+        self.width = widthBlocks
+        self.lname = nameOfLetter
+        self.pattern = pattern
+
 #Visible area to display the text against.
 class TextArea:
     def __init__(self, xPos, yPos, taWidth, taHeight):
@@ -72,7 +85,7 @@ class Block:
     def __init__(self, xPos, yPos):
         self.x = xPos
         self.y = yPos
-        self.state = 0
+        self.state = 1
         self.blockBatch = pyglet.graphics.Batch()
         self.blockSize = 20
         self.blockBatch.add(4, GL_QUADS, None, ("v2f", (self.x, self.y,   self.x + self.blockSize, self.y,   self.x + self.blockSize, self.y + self.blockSize,   self.x, self.y + self.blockSize,)),
