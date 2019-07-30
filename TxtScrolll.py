@@ -8,8 +8,11 @@ import math
 
 #Word class will contain several letters
 class Word:
-    def __init__(self):
-        self.contents = ""
+    def __init__(self, letters):
+        self.contents = letters
+    
+    def addLetter(self, letterToAdd):
+        self.contents = self.contents + letterToAdd
 
 #Individual letter class, this will hold the pattern required to display the letter in the text area.
 class Letter:
@@ -27,6 +30,7 @@ class TextArea:
         self.x = xPos
         self.y = yPos
         self.batch = pyglet.graphics.Batch()
+        self.curPattern = 0
 
         self.blockList = []
 
@@ -53,13 +57,13 @@ class TextArea:
         startY = startY + padding
 
         #Workout how many blocks can be added on each row.
-        rowBlockMax = maxX / 25
-        colBlockMax = maxY / 25
+        rowBlockMax = maxX / 24
+        colBlockMax = maxY / 24
         r = 0
         c = 0
         
-        while c < colBlockMax:
-            while r < rowBlockMax:
+        while c <= colBlockMax:
+            while r <= rowBlockMax:
                 self.blockList.append(Block(startX + offsetX, startY + offsetY))
                 r += 1
                 offsetX = offsetX + padding + 20
@@ -68,16 +72,22 @@ class TextArea:
             c += 1
             offsetY = offsetY + padding + 20
         return True
-
+        
+    def setPattern(self, patternToDraw):
+        self.curPattern = patternToDraw
 
     def draw(self):
         self.batch.draw()
         self.drawBlocks()
     
     #Iterates through the blockList calling draw on each block, weather anything is output depends on that blocks flipped state.
+    #Due to the way the blocks are added to the list, the ordering is started from the bottom row then progresses horiztonal along each row to the end then starting on the row above.
     def drawBlocks(self):
         for i, val in enumerate(self.blockList):
             val.draw()
+            self.curPattern = self.curPattern + val.state
+        print(bin(self.curPattern))
+            
 
 
 #The block class will be used to create letters.
@@ -85,7 +95,7 @@ class Block:
     def __init__(self, xPos, yPos):
         self.x = xPos
         self.y = yPos
-        self.state = 1
+        self.state = 0
         self.blockBatch = pyglet.graphics.Batch()
         self.blockSize = 20
         self.blockBatch.add(4, GL_QUADS, None, ("v2f", (self.x, self.y,   self.x + self.blockSize, self.y,   self.x + self.blockSize, self.y + self.blockSize,   self.x, self.y + self.blockSize,)),
@@ -98,7 +108,7 @@ class Block:
     
     def draw(self):
         #This adds the other part to the functionality of the blocks, allowing them to be "flipped" on or off.
-        if(self.state == 0):
+        if(self.state == 1):
             self.blockBatch.draw()
         
         
